@@ -62,20 +62,20 @@ front_pos = linspace(front_start, front_end, nSteps);
 
 hFig = figure('Name','Bridge Structural Analysis','NumberTitle','off');
 clf(hFig);
-set(hFig, 'Color', 'w', 'Position', [100 100 1600 800]);
+set(hFig, 'Color', [0.97 0.97 0.97], 'Position', [50 50 1650 850]);
 
-% Main 3D view
-ax = subplot('Position', [0.05 0.12 0.58 0.82]);
+ax = subplot('Position', [0.04 0.10 0.60 0.85]);
 hold(ax,'on'); grid(ax,'on'); box(ax,'on');
 view(ax, 130, 25);
 camproj(ax,'perspective');
-xlabel(ax, 'Longitudinal Position (mm)', 'FontSize', 11, 'FontWeight', 'normal', 'FontName', 'Arial');
-ylabel(ax, 'Vertical Deflection (mm)', 'FontSize', 11, 'FontWeight', 'normal', 'FontName', 'Arial');
-zlabel(ax, 'Lateral Position (mm)', 'FontSize', 11, 'FontWeight', 'normal', 'FontName', 'Arial');
-set(ax, 'FontName', 'Arial', 'FontSize', 10);
+xlabel(ax, 'Longitudinal Position (mm)', 'FontSize', 12, 'FontWeight', 'normal', 'FontName', 'Segoe UI');
+ylabel(ax, 'Vertical Deflection (mm)', 'FontSize', 12, 'FontWeight', 'normal', 'FontName', 'Segoe UI');
+zlabel(ax, 'Lateral Position (mm)', 'FontSize', 12, 'FontWeight', 'normal', 'FontName', 'Segoe UI');
+set(ax, 'FontName', 'Segoe UI', 'FontSize', 10.5, 'Color', [0.99 0.99 0.99]);
+set(ax, 'GridAlpha', 0.12, 'GridLineStyle', '-', 'LineWidth', 0.6);
 
 % Side panel for anayalsis
-ax_text = subplot('Position', [0.67 0.12 0.30 0.82]);
+ax_text = subplot('Position', [0.66 0.10 0.32 0.85]);
 axis(ax_text,'off');
 
 failed      = false;
@@ -90,6 +90,7 @@ critical_mode_history = '';
 max_deflection_history = 0;
 
 for k = 1:nSteps
+
     % positioning frames
     front_x = front_pos(k);
     axle_x  = front_x + offsets;
@@ -213,7 +214,6 @@ for k = 1:nSteps
     % 3D Animation
     cla(ax);
     hold(ax,'on'); grid(ax,'on');
-    set(ax, 'GridAlpha', 0.15, 'GridLineStyle', '-', 'LineWidth', 0.5);
 
     sup_h = 50;
     draw_support_block(ax, 0, sup_h, W_bridge);
@@ -221,17 +221,17 @@ for k = 1:nSteps
 
     if ~failed
         draw_box_beam_smooth(ax, x, w_smooth, y_top_face0, H_bridge, zmin, zmax, ...
-                             [0.88 0.94 0.99], [0.25 0.45 0.75]);
+                             [0.90 0.95 0.99], [0.28 0.48 0.78]);
     else
         draw_box_beam_smooth(ax, x, w_smooth, y_top_face0, H_bridge, zmin, zmax, ...
-                             [1.0 0.70 0.70], [0.85 0.15 0.15]);
+                             [1.0 0.72 0.72], [0.87 0.17 0.17]);
 
         if fail_x >= min(x) && fail_x <= max(x)
             y_fail = interp1(x, w_smooth, fail_x, 'linear', 0) + y_top_face0;
-            plot3(ax, fail_x, y_fail, 0, 'rx', 'MarkerSize', 22, 'LineWidth', 4.5);
-            text(fail_x, y_fail + 70, 0, '⚠ FAILURE', ...
-                 'FontSize', 12, 'FontWeight', 'bold', 'Color', [0.9 0 0], ...
-                 'HorizontalAlignment', 'center', 'Parent', ax, 'FontName', 'Arial');
+            plot3(ax, fail_x, y_fail, 0, 'rx', 'MarkerSize', 24, 'LineWidth', 5);
+            text(fail_x, y_fail + 75, 0, '⚠ FAILURE', ...
+                 'FontSize', 13, 'FontWeight', 'bold', 'Color', [0.92 0 0], ...
+                 'HorizontalAlignment', 'center', 'Parent', ax, 'FontName', 'Segoe UI');
         end
     end
 
@@ -247,7 +247,7 @@ for k = 1:nSteps
 
             arrow_len = 60;
             quiver3(ax, px, y_top_here + H_bridge + 15, 0, 0, -arrow_len, 0, ...
-                    'Color', [0.92 0.12 0.12], 'LineWidth', 3.2, 'MaxHeadSize', 1.5);
+                    'Color', [0.94 0.14 0.14], 'LineWidth', 3.4, 'MaxHeadSize', 1.6);
         end
     end
 
@@ -262,119 +262,131 @@ for k = 1:nSteps
     lighting(ax,'gouraud');
 
     if ~failed
-        title(ax, sprintf('Bridge Structural Model | Frame %d/%d', k, nSteps), ...
-              'FontWeight', 'bold', 'FontSize', 13, 'FontName', 'Arial');
+        title(ax, sprintf('Bridge Structural Model  |  Frame %d/%d', k, nSteps), ...
+              'FontWeight', 'normal', 'FontSize', 14, 'FontName', 'Segoe UI', 'Color', [0.15 0.15 0.15]);
     else
-        title(ax, sprintf('FAILURE DETECTED | x = %.0f mm | %s', fail_x, fail_mode), ...
-              'FontWeight', 'bold', 'Color', [0.8 0 0], 'FontSize', 13, 'FontName', 'Arial');
+        title(ax, sprintf('FAILURE DETECTED  |  x = %.0f mm  |  %s', fail_x, fail_mode), ...
+              'FontWeight', 'bold', 'Color', [0.82 0 0], 'FontSize', 14, 'FontName', 'Segoe UI');
     end
 
     % updating analysis as position changes
     cla(ax_text);
     axis(ax_text,'off');
 
-    % title
-    text(0.05, 0.96, 'STRUCTURAL ANALYSIS', ...
-         'FontSize', 15, 'FontWeight', 'bold', 'Parent', ax_text, 'FontName', 'Arial');
-    
-    % divider line
-    line([0.05 0.95], [0.935 0.935], 'Color', [0.7 0.7 0.7], 'LineWidth', 1.5, 'Parent', ax_text);
+    rectangle('Position', [0.02 0.02 0.96 0.96], 'FaceColor', 'white', ...
+              'EdgeColor', [0.85 0.85 0.85], 'LineWidth', 1.2, 'Parent', ax_text);
 
-    ypos = 0.88;
+    text(0.50, 0.955, 'STRUCTURAL ANALYSIS', ...
+         'FontSize', 16, 'FontWeight', 'bold', 'Parent', ax_text, 'FontName', 'Segoe UI', ...
+         'HorizontalAlignment', 'center', 'Color', [0.12 0.12 0.12]);
+    
+    line([0.08 0.92], [0.925 0.925], 'Color', [0.75 0.75 0.75], 'LineWidth', 1.3, 'Parent', ax_text);
+
+        
+    ypos = 0.86;
     
     % current Status Section
-    text(0.05, ypos, 'CURRENT STATUS', 'FontSize', 12, 'FontWeight', 'bold', ...
-         'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.2 0.2 0.2]);
-    ypos = ypos - 0.06;
+    text(0.08, ypos, 'CURRENT STATUS', 'FontSize', 13, 'FontWeight', 'bold', ...
+         'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.18 0.18 0.18]);
+    ypos = ypos - 0.07;
 
     if P_on > 0
         if FOS_global >= 1.5
-            fos_color = [0.13 0.55 0.13];  % green
+            fos_color = [0.10 0.58 0.10];
+            status_bg = [0.90 0.97 0.90];
         elseif FOS_global >= 1.0
-            fos_color = [0.85 0.65 0.13];  % amber
+            fos_color = [0.88 0.65 0.10];
+            status_bg = [1.0 0.97 0.88];
         else
-            fos_color = [0.8 0.1 0.1];     % red
+            fos_color = [0.82 0.08 0.08];
+            status_bg = [1.0 0.92 0.92];
         end
         
-        text(0.08, ypos, sprintf('Min FOS: %.3f', FOS_global), ...
-             'FontSize', 13, 'FontWeight', 'bold', 'Parent', ax_text, ...
-             'FontName', 'Arial', 'Color', fos_color);
+        rectangle('Position', [0.08 ypos-0.015 0.84 0.075], 'FaceColor', status_bg, ...
+                  'EdgeColor', 'none', 'Parent', ax_text);
+        
+        text(0.12, ypos+0.025, sprintf('Min FOS: %.3f', FOS_global), ...
+             'FontSize', 15, 'FontWeight', 'bold', 'Parent', ax_text, ...
+             'FontName', 'Segoe UI', 'Color', fos_color);
+        ypos = ypos - 0.065;
+        
+        text(0.12, ypos, sprintf('Critical Mode: %s', critical_mode), ...
+             'FontSize', 10.5, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
         ypos = ypos - 0.05;
         
-        text(0.08, ypos, sprintf('Mode: %s', critical_mode), ...
-             'FontSize', 10, 'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.3 0.3 0.3]);
-        ypos = ypos - 0.045;
-        
-        text(0.08, ypos, sprintf('Location: x = %.1f mm', fail_location), ...
-             'FontSize', 10, 'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.3 0.3 0.3]);
+        text(0.12, ypos, sprintf('Location: x = %.1f mm', fail_location), ...
+             'FontSize', 10.5, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
     else
-        text(0.08, ypos, 'No load on bridge', ...
-             'FontSize', 11, 'Color', [0.5 0.5 0.5], 'Parent', ax_text, 'FontName', 'Arial');
+        text(0.12, ypos, 'No load currently on bridge', ...
+             'FontSize', 11.5, 'Color', [0.48 0.48 0.48], 'Parent', ax_text, 'FontName', 'Segoe UI');
     end
     
-    ypos = ypos - 0.08;
+    ypos = ypos - 0.09;
+    line([0.08 0.92], [ypos ypos], 'Color', [0.88 0.88 0.88], 'LineWidth', 0.8, 'Parent', ax_text);
+    ypos = ypos - 0.05;
     
     % load info Section
-    text(0.05, ypos, 'LOADING', 'FontSize', 12, 'FontWeight', 'bold', ...
-         'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.2 0.2 0.2]);
-    ypos = ypos - 0.06;
+    text(0.08, ypos, 'LOADING', 'FontSize', 13, 'FontWeight', 'bold', ...
+         'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.18 0.18 0.18]);
+    ypos = ypos - 0.065;
     
-    text(0.08, ypos, sprintf('Applied: %.1f N / %.0f N', P_on, total_load), ...
-         'FontSize', 10, 'Parent', ax_text, 'FontName', 'Arial');
-    ypos = ypos - 0.045;
+    text(0.12, ypos, sprintf('Applied: %.1f N', P_on), ...
+         'FontSize', 10.5, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
+    ypos = ypos - 0.05;
     
-    text(0.08, ypos, sprintf('Progress: %.1f%%', 100*P_on/total_load), ...
-         'FontSize', 10, 'Parent', ax_text, 'FontName', 'Arial');
+    text(0.12, ypos, sprintf('Capacity: %.0f N', total_load), ...
+         'FontSize', 10.5, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
     
     ypos = ypos - 0.08;
+    line([0.08 0.92], [ypos ypos], 'Color', [0.88 0.88 0.88], 'LineWidth', 0.8, 'Parent', ax_text);
+    ypos = ypos - 0.05;
     
     % deflection Section
-    text(0.05, ypos, 'DEFLECTION', 'FontSize', 12, 'FontWeight', 'bold', ...
-         'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.2 0.2 0.2]);
-    ypos = ypos - 0.06;
+    text(0.08, ypos, 'DEFLECTION', 'FontSize', 13, 'FontWeight', 'bold', ...
+         'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.18 0.18 0.18]);
+    ypos = ypos - 0.065;
     
-    text(0.08, ypos, sprintf('Max: %.3f mm', max_deflection), ...
-         'FontSize', 10, 'Parent', ax_text, 'FontName', 'Arial');
-    ypos = ypos - 0.045;
+    text(0.12, ypos, sprintf('Current: %.3f mm', max_deflection), ...
+         'FontSize', 10.5, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
+    ypos = ypos - 0.05;
     
-    text(0.08, ypos, sprintf('Span Ratio: L/%.0f', L/max(max_deflection, 0.001)), ...
-         'FontSize', 10, 'Parent', ax_text, 'FontName', 'Arial');
-    ypos = ypos - 0.045;
+    text(0.12, ypos, sprintf('Span Ratio: L / %.0f', L/max(max_deflection, 0.001)), ...
+         'FontSize', 10.5, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
+    ypos = ypos - 0.05;
     
-    text(0.08, ypos, sprintf('Historical Max: %.3f mm', max_deflection_history), ...
-         'FontSize', 9, 'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.4 0.4 0.4]);
+    text(0.12, ypos, sprintf('Historical Max: %.3f mm', max_deflection_history), ...
+         'FontSize', 10, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.45 0.45 0.45]);
     
-    ypos = ypos - 0.10;
+    ypos = ypos - 0.09;
+    line([0.08 0.92], [ypos ypos], 'Color', [0.88 0.88 0.88], 'LineWidth', 0.8, 'Parent', ax_text);
+    ypos = ypos - 0.05;
     
     % historical Data section
-    line([0.05 0.95], [ypos+0.02 ypos+0.02], 'Color', [0.7 0.7 0.7], 'LineWidth', 1, 'Parent', ax_text);
-    
-    text(0.05, ypos, 'HISTORICAL MINIMUM', 'FontSize', 12, 'FontWeight', 'bold', ...
-         'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.2 0.2 0.2]);
-    ypos = ypos - 0.06;
+    text(0.08, ypos, 'HISTORICAL MINIMUM', 'FontSize', 13, 'FontWeight', 'bold', ...
+         'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.18 0.18 0.18]);
+    ypos = ypos - 0.065;
     
     if min_FOS_history < inf
-        hist_color = [0.2 0.2 0.7];
-        text(0.08, ypos, sprintf('FOS: %.3f', min_FOS_history), ...
-             'FontSize', 12, 'FontWeight', 'bold', 'Parent', ax_text, ...
-             'FontName', 'Arial', 'Color', hist_color);
-        ypos = ypos - 0.05;
+        hist_color = [0.15 0.15 0.68];
+        text(0.12, ypos, sprintf('Min FOS Ever: %.3f', min_FOS_history), ...
+             'FontSize', 11.5, 'FontWeight', 'bold', 'Parent', ax_text, ...
+             'FontName', 'Segoe UI', 'Color', hist_color);
+        ypos = ypos - 0.055;
         
-        text(0.08, ypos, sprintf('Mode: %s', critical_mode_history), ...
-             'FontSize', 9, 'Parent', ax_text, 'FontName', 'Arial', 'Color', [0.3 0.3 0.3]);
+        text(0.12, ypos, sprintf('Mode: %s', critical_mode_history), ...
+             'FontSize', 10, 'Parent', ax_text, 'FontName', 'Segoe UI', 'Color', [0.25 0.25 0.25]);
     else
-        text(0.08, ypos, 'Awaiting data...', ...
-             'FontSize', 10, 'Color', [0.5 0.5 0.5], 'Parent', ax_text, 'FontName', 'Arial');
+        text(0.12, ypos, 'Awaiting data...', ...
+             'FontSize', 11, 'Color', [0.50 0.50 0.50], 'Parent', ax_text, 'FontName', 'Segoe UI');
     end
 
-    % failure msg
     if failed
-        ypos = 0.08;
-        rectangle('Position', [0.05 ypos-0.04 0.90 0.10], 'FaceColor', [1 0.9 0.9], ...
-                  'EdgeColor', [0.8 0.1 0.1], 'LineWidth', 2.5, 'Parent', ax_text);
-        text(0.50, ypos+0.01, '⚠ STRUCTURAL FAILURE', ...
-             'FontSize', 13, 'FontWeight', 'bold', 'Color', [0.8 0 0], ...
-             'HorizontalAlignment', 'center', 'Parent', ax_text, 'FontName', 'Arial');
+        ypos = 0.11;
+        rectangle('Position', [0.08 ypos-0.035 0.84 0.095], 'FaceColor', [1.0 0.92 0.92], ...
+                  'EdgeColor', [0.82 0.08 0.08], 'LineWidth', 2.8, 'Parent', ax_text);
+        text(0.50, ypos+0.012, '⚠  STRUCTURAL FAILURE DETECTED', ...
+             'FontSize', 13.5, 'FontWeight', 'bold', 'Color', [0.82 0 0], ...
+             'HorizontalAlignment', 'center', 'Parent', ax_text, 'FontName', 'Segoe UI');
     end
 
     drawnow;
@@ -451,23 +463,23 @@ function draw_box_beam_smooth(ax, xline, wline, y_top0, H, zmin, zmax, faceColor
     [X_top, Z_top] = meshgrid(xline, [zmin, zmax]);
     Y_top = repmat(yTop, 2, 1);
     surf(ax, X_top, Y_top, Z_top, ...
-        'FaceColor', faceColor, 'EdgeColor', 'none', 'FaceAlpha', 0.92);
+        'FaceColor', faceColor, 'EdgeColor', 'none', 'FaceAlpha', 0.94);
 
     [X_bot, Z_bot] = meshgrid(xline, [zmin, zmax]);
     Y_bot = repmat(yBot, 2, 1);
     surf(ax, X_bot, Y_bot, Z_bot, ...
-        'FaceColor', faceColor*0.88, 'EdgeColor', 'none', 'FaceAlpha', 0.92);
+        'FaceColor', faceColor*0.89, 'EdgeColor', 'none', 'FaceAlpha', 0.94);
 
     X_side = repmat(xline, 2, 1);
     Z_left = zmin * ones(2, n);
     Y_left = [yBot; yTop];
     surf(ax, X_side, Y_left, Z_left, ...
-        'FaceColor', faceColor*0.80, 'EdgeColor', 'none', 'FaceAlpha', 0.88);
+        'FaceColor', faceColor*0.82, 'EdgeColor', 'none', 'FaceAlpha', 0.91);
 
     Z_right = zmax * ones(2, n);
     Y_right = [yBot; yTop];
     surf(ax, X_side, Y_right, Z_right, ...
-        'FaceColor', faceColor*0.80, 'EdgeColor', 'none', 'FaceAlpha', 0.88);
+        'FaceColor', faceColor*0.82, 'EdgeColor', 'none', 'FaceAlpha', 0.91);
 
     xL = xline(1);
     xR = xline(end);
@@ -478,8 +490,8 @@ function draw_box_beam_smooth(ax, xline, wline, y_top0, H, zmin, zmax, faceColor
         xL, yTop(1), zmax;
         xL, yBot(1), zmax ];
     patch(ax, 'Vertices', vertsL, 'Faces', [1 2 3 4], ...
-        'FaceColor', faceColor*0.75, 'EdgeColor', edgeColor, ...
-        'LineWidth', 1.0, 'FaceAlpha', 0.92);
+        'FaceColor', faceColor*0.77, 'EdgeColor', edgeColor, ...
+        'LineWidth', 1.1, 'FaceAlpha', 0.94);
 
     vertsR = [ ...
         xR, yBot(end), zmin;
@@ -487,18 +499,18 @@ function draw_box_beam_smooth(ax, xline, wline, y_top0, H, zmin, zmax, faceColor
         xR, yTop(end), zmax;
         xR, yBot(end), zmax ];
     patch(ax, 'Vertices', vertsR, 'Faces', [1 2 3 4], ...
-        'FaceColor', faceColor*0.75, 'EdgeColor', edgeColor, ...
-        'LineWidth', 1.0, 'FaceAlpha', 0.92);
+        'FaceColor', faceColor*0.77, 'EdgeColor', edgeColor, ...
+        'LineWidth', 1.1, 'FaceAlpha', 0.94);
 
-    plot3(ax, xline, yTop, zmin*ones(1,n), 'Color', edgeColor, 'LineWidth', 1.3);
-    plot3(ax, xline, yTop, zmax*ones(1,n), 'Color', edgeColor, 'LineWidth', 1.3);
-    plot3(ax, xline, yBot, zmin*ones(1,n), 'Color', edgeColor*0.7, 'LineWidth', 0.9);
-    plot3(ax, xline, yBot, zmax*ones(1,n), 'Color', edgeColor*0.7, 'LineWidth', 0.9);
+    plot3(ax, xline, yTop, zmin*ones(1,n), 'Color', edgeColor, 'LineWidth', 1.4);
+    plot3(ax, xline, yTop, zmax*ones(1,n), 'Color', edgeColor, 'LineWidth', 1.4);
+    plot3(ax, xline, yBot, zmin*ones(1,n), 'Color', edgeColor*0.72, 'LineWidth', 1.0);
+    plot3(ax, xline, yBot, zmax*ones(1,n), 'Color', edgeColor*0.72, 'LineWidth', 1.0);
 
-    plot3(ax, [xL xL], [yBot(1) yTop(1)], [zmin zmin], 'Color', edgeColor, 'LineWidth', 1.0);
-    plot3(ax, [xL xL], [yBot(1) yTop(1)], [zmax zmax], 'Color', edgeColor, 'LineWidth', 1.0);
-    plot3(ax, [xR xR], [yBot(end) yTop(end)], [zmin zmin], 'Color', edgeColor, 'LineWidth', 1.0);
-    plot3(ax, [xR xR], [yBot(end) yTop(end)], [zmax zmax], 'Color', edgeColor, 'LineWidth', 1.0);
+    plot3(ax, [xL xL], [yBot(1) yTop(1)], [zmin zmin], 'Color', edgeColor, 'LineWidth', 1.1);
+    plot3(ax, [xL xL], [yBot(1) yTop(1)], [zmax zmax], 'Color', edgeColor, 'LineWidth', 1.1);
+    plot3(ax, [xR xR], [yBot(end) yTop(end)], [zmin zmin], 'Color', edgeColor, 'LineWidth', 1.1);
+    plot3(ax, [xR xR], [yBot(end) yTop(end)], [zmax zmax], 'Color', edgeColor, 'LineWidth', 1.1);
 end
 
 function draw_support_block(ax, x0, height, width)
@@ -522,6 +534,6 @@ function draw_support_block(ax, x0, height, width)
              4 1 5 8];
 
     patch(ax, 'Vertices', verts, 'Faces', faces, ...
-          'FaceColor', [0.35 0.35 0.35], 'EdgeColor', [0.15 0.15 0.15], ...
-          'LineWidth', 1.2, 'FaceAlpha', 0.88);
+          'FaceColor', [0.38 0.38 0.38], 'EdgeColor', [0.18 0.18 0.18], ...
+          'LineWidth', 1.3, 'FaceAlpha', 0.90);
 end
