@@ -33,7 +33,7 @@ fprintf('Span: %.0f mm | E: %.0f MPa | I: %.1f mm^4\n', L, E, I);
 fprintf('Total train load: 400 N (6 axles × %.1f N)\n\n', 400/6);
 
 n  = 600;
-x  = linspace(0, L, 600);
+x  = linspace(0, L, n+1);
 
 %% Train Load for Loadcase1
 total_load = 400;
@@ -114,16 +114,18 @@ for k = 1:nSteps
     fail_location = NaN;
 
     if ~failed && P_on > 0
-        S_top = abs(M) .* y_top ./ I;
-        S_bot = abs(M) .* y_bot ./ I;
+        stress_top = -M .* y_top ./ I;
+        stress_bot =  M .* y_bot ./ I;
+
+        stress_bot_tens = max(stress_bot, 0);
 
         tau_web  = abs(V) .* Q_web  ./ (I * t_web);
         tau_glue = abs(V) .* Q_glue ./ (I * t_glue);
 
-        FOS_tension     = caps.tension          ./ (S_bot    + eps_small);
-        FOS_compression = caps.compression      ./ (S_top    + eps_small);
-        FOS_flange_buck = caps.flange_buckling  ./ (S_top    + eps_small);
-        FOS_web_buck    = caps.web_buckling     ./ (S_top    + eps_small);
+        FOS_tension     = caps.tension          ./ (stress_bot_tens + eps_small);
+        FOS_compression = caps.compression      ./ (abs(stress_top) + eps_small);
+        FOS_flange_buck = caps.flange_buckling  ./ (abs(stress_top) + eps_small);
+        FOS_web_buck    = caps.web_buckling     ./ (abs(stress_top) + eps_small);
         FOS_shear       = caps.shear_board      ./ (tau_web  + eps_small);
         FOS_glue        = caps.shear_glue       ./ (tau_glue + eps_small);
         FOS_shear_buck  = caps.shear_buckling   ./ (tau_web  + eps_small);
